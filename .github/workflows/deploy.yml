@@ -4,6 +4,9 @@
 #   CLOUDFLARE_API_TOKEN    （Cloudflare 控制台 → My Profile → API Tokens）
 #   CLOUDFLARE_ACCOUNT_ID   （npx wrangler whoami）
 #
+# 没配这两个 secret 时，本流程不会失败，只会跳过部署并在日志里留一条提示，
+# 免得 fork 这个仓库的人都看到自己首页挂着一个红叉。
+#
 # 不想要自动部署就删掉这个文件；手动部署用 `npm run deploy` 即可。
 name: Deploy
 
@@ -17,13 +20,34 @@ on:
       - 'wrangler.jsonc'
       - 'package.json'
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # secret 不能直接写进 if 条件，先转成输出再判断。
+      # 用 env 中转而不是把 ${{ secrets.* }} 插值进 shell，避免凭据出现在命令行里。
+      - name: 检查 Cloudflare 凭据
+        id: guard
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=跳过部署::未配置 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID，本次只验证代码，不发布。"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.guard.outputs.ready == 'true'
 
       - uses: cloudflare/wrangler-action@v3
+        if: steps.guard.outputs.ready == 'true'
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -164,7 +164,9 @@ npx wrangler rollback <版本ID>
 
 ## 9. 自动部署（可选）
 
-`.github/workflows/deploy.yml` 已经放好了，只在 push 到 `main` 时跑。
+`.github/workflows/deploy.yml` 已经放好了，只在 push 到 `main` 且改到 `worker/ public/ wrangler.jsonc package.json` 时跑（也能在 Actions 页面手动触发）。
+
+**没配下面两个 Secret 时它不会失败**，只会跳过部署并在日志里留一条提示——这样别人 fork 你的仓库，首页不会挂一个红叉。
 
 需要在 GitHub 仓库里加两个 Secret：
 
