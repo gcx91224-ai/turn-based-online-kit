@@ -9,9 +9,7 @@
 ![runtime](https://img.shields.io/badge/runtime-Cloudflare%20Workers-f38020)
 ![build](https://img.shields.io/badge/build-none-success)
 
-<!-- 换成你的仓库地址后取消注释
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
--->
+[![CI](https://github.com/gcx91224-ai/turn-based-online-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/gcx91224-ai/turn-based-online-kit/actions/workflows/ci.yml)
 
 demo 是"石头剪刀布，先赢 3 局"。它的作用是**证明整条链路是通的**：
 
