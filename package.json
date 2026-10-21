@@ -1,0 +1,20 @@
+{
+  "name": "turn-based-online-kit",
+  "version": "1.0.0",
+  "description": "Minimal two-player online turn-based game kit on Cloudflare Workers + Durable Objects. Clone, deploy, and swap in your own rules.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test",
+    "check": "node --check worker/index.js && node --check worker/room.js && node --check worker/protocol.js && node --check worker/game.js && node --check extras/players.js && node --check extras/ladder.js && node --check public/app.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>回合制联机套件</title>
+
+<!-- ★ 邀请链接 /r/<房间码> 是把这份 HTML 挂在 /r/<码> 这个地址上发出的。
+     那样下面的 style.css / app.js 这些**相对**地址会被解析成 /r/style.css、/r/app.js，
+     而 /r/* 在 Worker 里是「房间码」路由，直接 400 —— 整个站会变成没样式没脚本的白板。
+     所以站点下把基址钉死成 '/'。
+     必须是内联同步脚本：<base> 要在后面这些标签被解析之前生效。
+     file:// 双击打开时没有「根」，保持相对。 -->
+<script>
+  if (location.protocol !== 'file:') document.write('<base href="/">');
+</script>
+
+<link rel="stylesheet" href="style.css?v=1" />
+</head>
+<body>
+<main id="app">
+  <header class="top">
+    <span class="brand">回合制联机套件</span>
+    <span id="who" class="who"></span>
+  </header>
+
+  <section id="screen" class="screen"></section>
+
+  <footer class="foot">
+    两端同时出招 · 服务器收齐才公开 · 断线可重连
+  </footer>
+</main>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="app.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  // Worker 名。deploy 后地址是 https://<name>.<your-subdomain>.workers.dev
+  // 想绑自己的域名不要去改这个文件，在 Cloudflare 控制台加（见 docs/06-deploy.md）。
+  "name": "turn-based-online-kit",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-09-01",
+
+  // public/ 整个目录直出。
+  // ★ binding 必须写：不写的话 Worker 里没有 env.ASSETS，
+  //   /r/<房间码> 这种「先走脚本、再回头取静态文件」的路由会 503。
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    // 只有这两类请求进 Worker 脚本，其余全部直接发文件（更快，也不占请求额度）
+    "run_worker_first": ["/ws", "/api/*", "/r/*"]
+  },
+
+  "durable_objects": {
+    "bindings": [
+      { "name": "ROOMS", "class_name": "Room" }
+
+      // ---- 可选模块（默认不启用）------------------------------------------
+      // extras/ 里还有两个现成的 DO：
+      //   Players  名册：昵称/头像/好友/排位分/排行榜
+      //   Ladder   匹配队列：把分数接近的人撮合进一间普通房
+      //
+      // 要用就取消下面两行的注释，并在 migrations 里追加：
+      //   { "tag": "v2", "new_sqlite_classes": ["Players"] },
+      //   { "tag": "v3", "new_sqlite_classes": ["Ladder"] }
+      // 最后在 worker/index.js 里把 /api/players/* 和 /ws/ladder 路由接上。
+      // 设计说明见 docs/10-identity-and-social.md、docs/11-rank-and-match.md。
+      //
+      // ,{ "name": "PLAYERS", "class_name": "Players" }
+      // ,{ "name": "LADDER",  "class_name": "Ladder"  }
+    ]
+  },
+
+  // ★ 免费版只支持 SQLite 后端的 Durable Object。
+  //   写成 new_classes 部署会直接失败。
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["Room"] }
+  ],
+
+  "observability": { "enabled": true }
+}

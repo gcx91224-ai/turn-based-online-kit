@@ -1,0 +1,29 @@
+# 推送到 main 就自动部署。
+#
+# 需要先在 GitHub 仓库的 Settings → Secrets and variables → Actions 里加：
+#   CLOUDFLARE_API_TOKEN    （Cloudflare 控制台 → My Profile → API Tokens）
+#   CLOUDFLARE_ACCOUNT_ID   （npx wrangler whoami）
+#
+# 不想要自动部署就删掉这个文件；手动部署用 `npm run deploy` 即可。
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'worker/**'
+      - 'public/**'
+      - 'wrangler.jsonc'
+      - 'package.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
